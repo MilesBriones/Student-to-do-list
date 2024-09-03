@@ -8,18 +8,18 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-// Task Model and Color Generator
+
 class Task {
   final String text;
   final Color color;
   final DateTime time;
-  final bool isCompleted; // Added isCompleted flag
+  final bool isCompleted; 
 
   Task({
     required this.text,
     required this.color,
     required this.time,
-    this.isCompleted = false, // Default value for isCompleted
+    this.isCompleted = false,
   });
 
   Task copyWith({
@@ -36,30 +36,30 @@ class Task {
     );
   }
 
-  // Convert a Task to a Map
+
   Map<String, dynamic> toMap() {
     return {
       'text': text,
       'color': color.value,
       'time': time.toIso8601String(),
-      'isCompleted': isCompleted, // Include isCompleted in the map
+      'isCompleted': isCompleted, 
     };
   }
 
-  // Convert a Map to a Task
+  
   factory Task.fromMap(Map<String, dynamic> map) {
     return Task(
       text: map['text'],
       color: Color(map['color']),
       time: DateTime.parse(map['time']),
-      isCompleted: map['isCompleted'], // Get isCompleted from the map
+      isCompleted: map['isCompleted'],
     );
   }
 
-  // Convert a Task to a JSON string
+  
   String toJson() => json.encode(toMap());
 
-  // Convert a JSON string to a Task
+  
   factory Task.fromJson(String source) => Task.fromMap(json.decode(source));
 }
 
@@ -73,7 +73,7 @@ Color getRandomColor() {
   );
 }
 
-// ThemeProvider to handle light and dark theme
+
 class ThemeProvider extends ChangeNotifier {
   bool isDarkTheme = true;
 
@@ -336,7 +336,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   IconButton(
                                     icon: const Icon(Icons.check),
                                     onPressed: () =>
-                                        _completeTask(context, task), // Complete Task Button
+                                        _completeTask(context, task),
                                   ),
                                 ],
                               ),
@@ -364,7 +364,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             ListTile(
               title: const Text('Task History'),
-              onTap: () => _showTaskHistory(context), // Task History Option
+              onTap: () => _showTaskHistory(context),
             ),
           ],
         ),
@@ -506,13 +506,13 @@ class _MyHomePageState extends State<MyHomePage> {
     final taskHistoryProvider =
         Provider.of<TaskHistoryProvider>(context, listen: false);
 
-    // Mark task as completed
+    
     provider.markTaskAsCompleted(_selectedDay, task);
 
-    // Move to task history
+    
     taskHistoryProvider.addCompletedTask(task);
 
-    // Optionally, you can remove the task from the current list if you want to
+    
     provider.deleteTask(_selectedDay, task);
   }
 
@@ -527,12 +527,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
 class ToDoProvider extends ChangeNotifier {
   Map<DateTime, List<Task>> _tasks = {};
-  final List<Task> _completedTasks = []; // Track completed tasks separately
+  final List<Task> _completedTasks = []; 
 
   Future<void> loadTasks() async {
     final prefs = await SharedPreferences.getInstance();
 
-    // Load current tasks
+    
     final tasksJson = prefs.getString('tasks');
     if (tasksJson != null) {
       final loadedTasks = (json.decode(tasksJson) as Map<String, dynamic>)
@@ -543,7 +543,7 @@ class ToDoProvider extends ChangeNotifier {
       _tasks = loadedTasks;
     }
 
-    // Load completed tasks
+    
     final completedTasksJson = prefs.getString('completedTasks');
     if (completedTasksJson != null) {
       _completedTasks.addAll(
@@ -557,19 +557,19 @@ class ToDoProvider extends ChangeNotifier {
   void addTask(DateTime date, Task task) {
   final now = DateTime.now();
   if (task.time.isBefore(now)) {
-    // If task time is in the past, move it to history
+    
     _moveToTaskHistory(task.copyWith(
       color: Colors.red,
       text: "failed task: ${task.text}",
     ));
   } else {
-    // Otherwise, add to current tasks
+    
     if (_tasks[date] == null) {
       _tasks[date] = [];
     }
     _tasks[date]!.add(task);
-    _saveTasks();  // Save tasks after adding
-    notifyListeners();  // Notify listeners after state change
+    _saveTasks();  
+    notifyListeners();  
   }
 }
 
@@ -601,9 +601,9 @@ class ToDoProvider extends ChangeNotifier {
       time: task.time,
       isCompleted: true,
     );
-    // Remove from current tasks
+    
     _tasks[date]?.remove(task);
-    // Add to completed tasks
+    
     _completedTasks.add(updatedTask);
     _saveTasks();
     notifyListeners();
@@ -619,7 +619,7 @@ class ToDoProvider extends ChangeNotifier {
 
   void _moveToTaskHistory(Task task) {
     _completedTasks.add(task);
-    // Optionally, you can remove the task from the current tasks list if needed
+ 
     _saveTasks();
   }
 
@@ -631,7 +631,7 @@ class ToDoProvider extends ChangeNotifier {
         ));
     prefs.setString('tasks', json.encode(tasksJson));
 
-    // Save completed tasks
+    
     prefs.setString(
       'completedTasks',
       json.encode(_completedTasks.map((task) => task.toMap()).toList()),
